@@ -2,7 +2,7 @@ import pyttsx3
 import speech_recognition as sr
 import webbrowser
 import yfinance as yf
-#import pywhatkit
+import pywhatkit
 import pyjokes
 import datetime
 import wikipedia
@@ -99,7 +99,9 @@ def my_assistant():
             speak("Sure, I am opening youtube")
             webbrowser.open('https://www.youtube.com')
             continue
-        elif 'play a random song' in my_request:
+        elif 'hi zara' in my_request:
+            speak('Hi Aman, How can i help you')
+        elif 'random song' in my_request:
             speak("Sure, playing it right away")
             webbrowser.open('https://www.youtube.com/watch?v=JK_3gYHNoSw&list=RDJK_3gYHNoSw&start_radio=1')
         elif 'open browser' in my_request:
@@ -112,12 +114,45 @@ def my_assistant():
         elif 'what time it is' in my_request:
             ask_time()
             continue
-        elif 'do a wikipedia search for' in my_request:
+        elif 'wikipedia search for' in my_request:
             speak('Please wait, I am looking for it')
-            my_request = my_request.replace('do a wikipedia search for', '')
-            answer = wikipedia.summary(my_request, sentences=4)
-            speak('According to wikipedia: ')
-            speak(answer)
+            my_request = my_request.replace('wikipedia search for', '')
+            try:
+                answer = wikipedia.summary(my_request, sentences=1)
+                speak('According to wikipedia: ')
+                speak(answer)
+            except PageError:
+                speak("I did'nt find anything")
+        elif 'search the internet for' in my_request:
+            speak('Of Course, right now')
+            my_request = my_request.replace('search the internet for', '')
+            pywhatkit.search(my_request)
+            speak('this is what i found')
+            continue
+        elif 'play' in my_request:
+            speak("oh, what a great idea! i'll play it right away")
+            pywhatkit.playonyt(my_request.replace('play', ''))
+            continue
+        elif 'joke' in my_request:
+            speak(pyjokes.get_joke())
+            speak('HAHAHAHA')
+            continue
+        elif 'stock price' in my_request:
+            share = my_request.split()[-2].strip()
+            portfolio = {'apple': 'APPL',
+                            'amazon': 'AMZN',
+                            'google': 'GOOGL'}
+            try:
+                searched_stock = portfolio[share]
+                searched_stock = yf.Ticker(searched_stock)
+                price = searched_stock.info['regularMarketPrice']
+                speak(f'I found it! The price of {share} is {price}')
+            except:
+                speak('I am sorry, but i did not find it')
+        elif 'goodbye' in my_request:
+            speak("Bye! it was nice to assist you")
+            break
 
 my_assistant()
+
 
